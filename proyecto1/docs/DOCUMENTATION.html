@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rickpedia - Documentación v1.0.0</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0e17;
+      --panel: #1c2128;
+      --panel-alt: #262d36;
+      --text: #f5f7fa;
+      --accent: #44FF00;
+      --accent-alt: #00B5CC;
+      --danger: #ff5f56;
+      --success: #3fb950;
+      --warning: #f59e0b;
+      --code-bg: #161b22;
+      --border: #30363d;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Space Grotesk',system-ui,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+    a { color:var(--accent); text-decoration:none; transition:color .2s; }
+    a:hover { color:var(--accent-alt); }
+    code { background:var(--code-bg); padding:.15rem .4rem; border-radius:4px; font-size:.85em; font-family:'Fira Code',monospace; }
+    pre { background:var(--code-bg); padding:1rem 1.25rem; border-radius:8px; overflow-x:auto; font-size:.8rem; border:1px solid var(--border); line-height:1.5; font-family:'Fira Code',monospace; }
+
+    /* LAYOUT */
+    .layout { display:flex; min-height:100vh; }
+    nav#toc { width:280px; position:sticky; top:0; height:100vh; overflow-y:auto; background:var(--panel); border-right:1px solid var(--border); padding:1.5rem; flex-shrink:0; }
+    main { flex:1; padding:2.5rem 3rem; max-width:960px; }
+
+    /* TOC */
+    nav#toc h3 { font-size:1.1rem; margin-bottom:.5rem; color:var(--accent); display:flex; align-items:center; gap:.5rem; }
+    nav#toc .version { font-size:.65rem; background:var(--accent); color:#000; padding:.1rem .4rem; border-radius:8px; font-weight:700; }
+    .search-box { margin:.75rem 0; }
+    .search-box input { width:100%; padding:.5rem .75rem; background:var(--panel-alt); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:.8rem; outline:none; font-family:inherit; transition:border-color .2s; }
+    .search-box input:focus { border-color:var(--accent); }
+    .toc-section a { display:block; padding:.35rem .75rem; border-radius:6px; font-size:.78rem; color:#8b949e; transition:all .2s; }
+    .toc-section a:hover { background:var(--panel-alt); color:var(--text); }
+    .toc-section a.active { background:rgba(68,255,0,.1); color:var(--accent); }
+    .toc-label { font-size:.6rem; text-transform:uppercase; letter-spacing:.08em; color:#484f58; margin:1.25rem 0 .4rem; font-weight:700; }
+
+    /* HEADER */
+    .doc-header { margin-bottom:2.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); }
+    .doc-header h1 { font-size:2.2rem; margin-bottom:.25rem; background:linear-gradient(135deg,var(--accent),var(--accent-alt)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .doc-header .subtitle { color:#8b949e; font-size:.95rem; }
+    .badge { display:inline-block; padding:.2rem .65rem; border-radius:12px; font-size:.68rem; font-weight:700; margin-right:.4rem; }
+    .badge-primary { background:var(--accent); color:#000; }
+    .badge-info { background:var(--accent-alt); color:#fff; }
+    .badge-dark { background:var(--panel-alt); color:#8b949e; border:1px solid var(--border); }
+
+    /* SECTIONS */
+    section { margin-bottom:3rem; scroll-margin-top:1.5rem; }
+    section h2 { font-size:1.4rem; margin-bottom:1rem; padding-bottom:.5rem; border-bottom:1px solid var(--border); }
+
+    /* STACK */
+    .stack-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:.75rem; }
+    .stack-card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:1rem; transition:border-color .3s; }
+    .stack-card:hover { border-color:var(--accent); }
+    .stack-card h4 { font-size:.8rem; color:var(--accent); margin-bottom:.15rem; }
+    .stack-card p { font-size:.75rem; color:#8b949e; }
+
+    /* MERMAID */
+    .mermaid-wrapper { background:var(--panel); border-radius:12px; padding:1.5rem 2rem; margin:1.5rem 0; border:1px solid var(--border); overflow-x:auto; }
+
+    /* SCREEN CARDS */
+    .screen-card { background:var(--panel); border:1px solid var(--border); border-radius:16px; margin-bottom:1.5rem; overflow:hidden; transition:all .3s; }
+    .screen-card:hover { border-color:rgba(68,255,0,.4); box-shadow:0 0 30px rgba(68,255,0,.06); }
+    .screen-content { padding:1.5rem 1.75rem; }
+    .screen-id { font-size:.6rem; font-weight:800; color:var(--accent); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.4rem; }
+    .screen-title { font-size:1.15rem; font-weight:700; margin-bottom:.4rem; }
+    .screen-desc { color:#8b949e; margin-bottom:1rem; font-size:.88rem; }
+    .screen-features { margin-bottom:1rem; }
+    .screen-features strong { display:block; font-size:.78rem; color:var(--accent-alt); margin:.75rem 0 .25rem; }
+    .screen-features ul { list-style:none; }
+    .screen-features li { font-size:.78rem; color:#8b949e; padding:.15rem 0 .15rem 1rem; }
+    .screen-features li::before { content:'▸ '; color:var(--accent); }
+    .screen-actions { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.75rem; }
+
+    /* ACTION BADGES */
+    .action-badge { font-size:.62rem; padding:.25rem .55rem; border-radius:6px; font-weight:700; cursor:pointer; transition:.2s; display:inline-block; }
+    .action-badge a { color:#fff; }
+    .action-badge:hover { filter:brightness(1.15); transform:translateY(-1px); }
+    .action-badge.nav { background:var(--success); color:#fff; }
+    .action-badge.api { background:#4493f8; color:#fff; }
+
+    /* ENDPOINT CARDS */
+    .endpoint-card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:1.5rem; margin-bottom:1.25rem; scroll-margin-top:1.5rem; }
+    .endpoint-header { display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; }
+    .method { font-weight:800; padding:.2rem .55rem; border-radius:6px; font-size:.72rem; color:#fff; letter-spacing:.03em; }
+    .GET { background:#4493f8; } .POST { background:#3fb950; } .DELETE { background:#ff5f56; } .PATCH { background:#ffa657; color:#222; } .PUT { background:#b48cf2; }
+    .endpoint-path { font-family:'Fira Code',monospace; font-size:.88rem; color:var(--text); }
+    .endpoint-card p { color:#8b949e; font-size:.85rem; margin-bottom:.75rem; }
+    .endpoint-card h4 { font-size:.85rem; margin:1rem 0 .5rem; color:var(--accent-alt); }
+    .endpoint-card table { width:100%; border-collapse:collapse; margin:.5rem 0; }
+    .endpoint-card th,.endpoint-card td { text-align:left; padding:.45rem .75rem; border-bottom:1px solid var(--border); font-size:.78rem; }
+    .endpoint-card th { color:var(--accent-alt); font-weight:700; }
+
+    .notice { background:var(--panel-alt); border-left:3px solid var(--accent-alt); padding:.65rem 1rem; border-radius:0 8px 8px 0; margin:.75rem 0; font-size:.82rem; color:#8b949e; }
+
+    /* MAPPING TABLE */
+    .mapping-table { width:100%; border-collapse:collapse; margin-top:1rem; }
+    .mapping-table th { background:var(--panel-alt); color:var(--accent); font-size:.75rem; }
+    .mapping-table th,.mapping-table td { padding:.5rem .85rem; border:1px solid var(--border); font-size:.78rem; }
+    .mapping-table tr:hover { background:rgba(68,255,0,.03); }
+
+    /* COPY BUTTON */
+    .pre-wrapper { position:relative; }
+    .copy-btn { position:absolute; top:.45rem; right:.45rem; background:var(--panel-alt); border:1px solid var(--border); color:#8b949e; padding:.2rem .45rem; border-radius:4px; cursor:pointer; font-size:.65rem; font-family:inherit; transition:all .2s; z-index:2; }
+    .copy-btn:hover { color:var(--text); border-color:var(--accent); }
+
+    /* RESPONSIVE */
+    @media(max-width:768px) {
+      .layout { flex-direction:column; }
+      nav#toc { width:100%; height:auto; position:relative; border-right:none; border-bottom:1px solid var(--border); max-height:50vh; }
+      main { padding:1.5rem 1.25rem; }
+      .stack-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media(max-width:480px) {
+      .stack-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- TOC -->
+  <nav id="toc">
+    <h3>🛸 Rickpedia <span class="version">v1.0.0</span></h3>
+    <div class="search-box">
+      <input type="text" placeholder="Buscar sección..." oninput="filterToc(this)" />
+    </div>
+    <div class="toc-section">
+      <p class="toc-label">General</p>
+      <a href="#section-stack">🏗️ Stack Tecnológico</a>
+      <a href="#section-flow">🗺️ Flujo de Navegación</a>
+
+      <p class="toc-label">Pantallas</p>
+      <a href="#screen-home">🏠 Inicio</a>
+      <a href="#screen-characters">👽 Personajes</a>
+      <a href="#screen-character-detail">📋 Detalle de Personaje</a>
+      <a href="#screen-episodes">📺 Episodios</a>
+      <a href="#screen-locations">🌍 Ubicaciones</a>
+      <a href="#screen-favorites">⭐ Favoritos</a>
+
+      <p class="toc-label">API &amp; Servicios</p>
+      <a href="#section-api-overview">📡 Overview</a>
+      <a href="#api-characters-list">GET /character</a>
+      <a href="#api-character-detail">GET /character/:id</a>
+      <a href="#api-episodes-list">GET /episode</a>
+      <a href="#api-episode-detail">GET /episode/:id</a>
+      <a href="#api-episodes-multiple">GET /episode/[ids]</a>
+      <a href="#api-locations-list">GET /location</a>
+      <a href="#section-mapping">📊 Tabla de Mapeo</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main>
+    <!-- HEADER -->
+    <div class="doc-header">
+      <h1>📖 Rickpedia — Documentación Completa</h1>
+      <p class="subtitle">Enciclopedia interactiva del universo de Rick and Morty</p>
+      <div style="margin-top:.75rem">
+        <span class="badge badge-primary">v1.0.0</span>
+        <span class="badge badge-info">React 19 + TypeScript</span>
+        <span class="badge badge-dark">Vite 7 + Tailwind v4</span>
+      </div>
+    </div>
+
+    <!-- ================================== -->
+    <!-- STACK TECNOLÓGICO -->
+    <!-- ================================== -->
+    <section id="section-stack">
+      <h2>🏗️ Stack Tecnológico</h2>
+      <div class="stack-grid">
+        <div class="stack-card">
+          <h4>⚛️ React 19</h4>
+          <p>Componentes funcionales con hooks</p>
+        </div>
+        <div class="stack-card">
+          <h4>📘 TypeScript 5.9</h4>
+          <p>Tipado estricto en toda la app</p>
+        </div>
+        <div class="stack-card">
+          <h4>⚡ Vite 7</h4>
+          <p>Build tool con HMR instantáneo</p>
+        </div>
+        <div class="stack-card">
+          <h4>🎨 TailwindCSS v4</h4>
+          <p>Utility-first con @theme directive</p>
+        </div>
+        <div class="stack-card">
+          <h4>🧭 React Router v6</h4>
+          <p>Enrutamiento declarativo SPA</p>
+        </div>
+        <div class="stack-card">
+          <h4>💾 localStorage</h4>
+          <p>Persistencia de favoritos y tema</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- FLUJO DE NAVEGACIÓN -->
+    <!-- ================================== -->
+    <section id="section-flow">
+      <h2>🗺️ Flujo de Navegación</h2>
+      <div class="mermaid-wrapper">
+        <pre class="mermaid">
+%%{init: {'theme':'dark', 'themeVariables': {'primaryColor':'#44FF00','primaryTextColor':'#000','primaryBorderColor':'#2DB800','lineColor':'#00B5CC','secondaryColor':'#1c2128','tertiaryColor':'#262d36','fontSize':'14px'}, 'flowchart':{'nodeSpacing':60, 'rankSpacing':80, 'curve':'basis'}}}%%
+graph LR
+    HOME[🏠 Inicio] --> CHARS[👽 Personajes]
+    HOME --> EPS[📺 Episodios]
+    HOME --> LOCS[🌍 Ubicaciones]
+    HOME --> FAVS[⭐ Favoritos]
+    CHARS --> DETAIL[📋 Detalle Personaje]
+    DETAIL --> CHARS
+    DETAIL -->|Agregar/Quitar| FAVS
+    FAVS --> DETAIL
+
+    classDef homeNode fill:#44FF00,stroke:#2DB800,stroke-width:3px,color:#000,rx:12
+    classDef listNode fill:#4493f8,stroke:#1a5fbf,stroke-width:2px,color:#fff,rx:12
+    classDef detailNode fill:#00B5CC,stroke:#008fa0,stroke-width:2px,color:#fff,rx:12
+    classDef favNode fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#000,rx:12
+
+    class HOME homeNode
+    class CHARS,EPS,LOCS listNode
+    class DETAIL detailNode
+    class FAVS favNode
+        </pre>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- PANTALLA: INICIO -->
+    <!-- ================================== -->
+    <section id="screen-home">
+      <div class="screen-card">
+        <div class="screen-content">
+          <div class="screen-id">SCREEN-01</div>
+          <h3 class="screen-title">🏠 Pantalla de Inicio</h3>
+          <p class="screen-desc">Landing page principal con hero animado, estadísticas del universo Rick & Morty y personajes destacados. Actúa como hub central de navegación.</p>
+          <div class="screen-features">
+            <strong>Elementos UI:</strong>
+            <ul>
+              <li>Hero section con emoticono 🛸 flotante (animación float)</li>
+              <li>Título con gradiente verde-cyan</li>
+              <li>3 tarjetas de estadísticas (personajes, episodios, ubicaciones)</li>
+              <li>Grid de personajes destacados (6 primeros)</li>
+              <li>Sección CTA con call-to-action</li>
+            </ul>
+            <strong>Funcionalidades:</strong>
+            <ul>
+              <li>Carga automática de stats desde la API (count de info)</li>
+              <li>Skeleton loading en tarjetas de personajes</li>
+              <li>Navegación rápida a todas las secciones</li>
+              <li>Animaciones de hover en cards</li>
+            </ul>
+          </div>
+          <div class="screen-actions">
+            <span class="action-badge api"><a href="#api-characters-list">GET /character</a></span>
+            <span class="action-badge api"><a href="#api-episodes-list">GET /episode</a></span>
+            <span class="action-badge api"><a href="#api-locations-list">GET /location</a></span>
+            <span class="action-badge nav">→ Personajes</span>
+            <span class="action-badge nav">→ Episodios</span>
+            <span class="action-badge nav">→ Ubicaciones</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- PANTALLA: PERSONAJES -->
+    <!-- ================================== -->
+    <section id="screen-characters">
+      <div class="screen-card">
+        <div class="screen-content">
+          <div class="screen-id">SCREEN-02</div>
+          <h3 class="screen-title">👽 Personajes</h3>
+          <p class="screen-desc">Explorador de personajes con vista en grid, filtros avanzados y paginación. Muestra tarjetas con imagen, nombre, especie y estado vital con indicadores de color.</p>
+          <div class="screen-features">
+            <strong>Elementos UI:</strong>
+            <ul>
+              <li>Barra de búsqueda por nombre</li>
+              <li>4 filtros: Estado (Alive/Dead/unknown), Especie, Género, Búsqueda</li>
+              <li>Grid responsivo de tarjetas de personaje</li>
+              <li>Badge de estado con indicador de color (verde=vivo, rojo=muerto, gris=desconocido)</li>
+              <li>Controles de paginación (Anterior/Siguiente) con indicador de página</li>
+              <li>Skeleton loading (8 placeholders)</li>
+              <li>Estado vacío con emoji 🔍</li>
+            </ul>
+            <strong>Funcionalidades:</strong>
+            <ul>
+              <li>Filtrado combinado por nombre + status + species + gender</li>
+              <li>Paginación con 20 resultados por página</li>
+              <li>Click en tarjeta navega al detalle</li>
+              <li>Debounce implícito en búsqueda (re-render)</li>
+            </ul>
+          </div>
+          <div class="screen-actions">
+            <span class="action-badge api"><a href="#api-characters-list">GET /character?page=&name=&status=&gender=</a></span>
+            <span class="action-badge nav">→ Detalle de Personaje</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- PANTALLA: DETALLE DE PERSONAJE -->
+    <!-- ================================== -->
+    <section id="screen-character-detail">
+      <div class="screen-card">
+        <div class="screen-content">
+          <div class="screen-id">SCREEN-03</div>
+          <h3 class="screen-title">📋 Detalle de Personaje</h3>
+          <p class="screen-desc">Vista completa de un personaje individual con toda su información, lista de episodios en los que aparece y funcionalidad de favoritos.</p>
+          <div class="screen-features">
+            <strong>Elementos UI:</strong>
+            <ul>
+              <li>Botón "← Volver" a la lista</li>
+              <li>Imagen grande del personaje con borde redondeado</li>
+              <li>Nombre, especie, género, estado (con badge de color)</li>
+              <li>Información de origen y última ubicación conocida</li>
+              <li>Botón de favorito (⭐ toggle) con efecto hover</li>
+              <li>Lista de episodios con código de episodio (S01E01) y nombre</li>
+              <li>Skeleton loading mientras carga</li>
+            </ul>
+            <strong>Funcionalidades:</strong>
+            <ul>
+              <li>Carga datos del personaje por ID</li>
+              <li>Carga múltiples episodios en una sola petición</li>
+              <li>Toggle de favorito persistido en localStorage (key: 'rickpedia-favs')</li>
+              <li>Extracción de IDs de episodio desde URLs</li>
+            </ul>
+          </div>
+          <div class="screen-actions">
+            <span class="action-badge api"><a href="#api-character-detail">GET /character/:id</a></span>
+            <span class="action-badge api"><a href="#api-episodes-multiple">GET /episode/[ids]</a></span>
+            <span class="action-badge nav">→ Personajes (volver)</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- PANTALLA: EPISODIOS -->
+    <!-- ================================== -->
+    <section id="screen-episodes">
+      <div class="screen-card">
+        <div class="screen-content">
+          <div class="screen-id">SCREEN-04</div>
+          <h3 class="screen-title">📺 Episodios</h3>
+          <p class="screen-desc">Explorador de episodios con filtro por temporada y tarjetas con código de episodio, nombre y fecha de emisión.</p>
+          <div class="screen-features">
+            <strong>Elementos UI:</strong>
+            <ul>
+              <li>Botones de filtro por temporada (S01-S05 + Todas)</li>
+              <li>Tarjetas de episodio con código de temporada (badge verde)</li>
+              <li>Nombre del episodio, fecha de emisión</li>
+              <li>Contador de personajes por episodio</li>
+              <li>Paginación</li>
+              <li>Skeleton loading</li>
+            </ul>
+            <strong>Funcionalidades:</strong>
+            <ul>
+              <li>Filtrado client-side por temporada (parsea código S01E01)</li>
+              <li>Paginación con 20 episodios por página</li>
+            </ul>
+          </div>
+          <div class="screen-actions">
+            <span class="action-badge api"><a href="#api-episodes-list">GET /episode?page=</a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- PANTALLA: UBICACIONES -->
+    <!-- ================================== -->
+    <section id="screen-locations">
+      <div class="screen-card">
+        <div class="screen-content">
+          <div class="screen-id">SCREEN-05</div>
+          <h3 class="screen-title">🌍 Ubicaciones</h3>
+          <p class="screen-desc">Explorador de ubicaciones del multiverso con tarjetas que muestran tipo, dimensión y cantidad de residentes.</p>
+          <div class="screen-features">
+            <strong>Elementos UI:</strong>
+            <ul>
+              <li>Grid de tarjetas de ubicación</li>
+              <li>Nombre con icono dinámico según tipo</li>
+              <li>Tipo de ubicación (Planet, Space station, etc.)</li>
+              <li>Dimensión con color diferenciado</li>
+              <li>Contador de residentes</li>
+              <li>Paginación</li>
+            </ul>
+            <strong>Funcionalidades:</strong>
+            <ul>
+              <li>Paginación API con 20 ubicaciones por página</li>
+              <li>Colores de dimensión diferenciados (C-137, desconocida, etc.)</li>
+            </ul>
+          </div>
+          <div class="screen-actions">
+            <span class="action-badge api"><a href="#api-locations-list">GET /location?page=</a></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- PANTALLA: FAVORITOS -->
+    <!-- ================================== -->
+    <section id="screen-favorites">
+      <div class="screen-card">
+        <div class="screen-content">
+          <div class="screen-id">SCREEN-06</div>
+          <h3 class="screen-title">⭐ Favoritos</h3>
+          <p class="screen-desc">Lista de personajes marcados como favoritos por el usuario. Los favoritos se almacenan en localStorage y persisten entre sesiones.</p>
+          <div class="screen-features">
+            <strong>Elementos UI:</strong>
+            <ul>
+              <li>Grid de tarjetas de personajes favoritos</li>
+              <li>Botón de eliminar favorito (❌) por tarjeta</li>
+              <li>Estado vacío con mensaje motivacional y emoji ⭐</li>
+              <li>Link a personajes si la lista está vacía</li>
+            </ul>
+            <strong>Funcionalidades:</strong>
+            <ul>
+              <li>Lectura de IDs favoritos desde localStorage (key: 'rickpedia-favs')</li>
+              <li>Carga batch de personajes por IDs múltiples</li>
+              <li>Eliminación individual de favoritos con actualización inmediata</li>
+              <li>Navegación al detalle desde cada tarjeta</li>
+            </ul>
+          </div>
+          <div class="screen-actions">
+            <span class="action-badge api"><a href="#api-character-detail">GET /character/[ids]</a></span>
+            <span class="action-badge nav">→ Detalle de Personaje</span>
+            <span class="action-badge nav">→ Personajes</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- API OVERVIEW -->
+    <!-- ================================== -->
+    <section id="section-api-overview">
+      <h2>🔌 API & Servicios</h2>
+      <p style="color:#8b949e;margin-bottom:.5rem">API REST pública sin autenticación.</p>
+      <p>Base URL: <code>https://rickandmortyapi.com/api</code></p>
+      <div class="notice">
+        <strong>Nota:</strong> Todos los endpoints de lista devuelven respuestas paginadas con un objeto <code>info</code> que contiene <code>count</code>, <code>pages</code>, <code>next</code> y <code>prev</code>. Cada página contiene 20 resultados.
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- ENDPOINT: GET /character -->
+    <!-- ================================== -->
+    <section id="api-characters-list">
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-path">/character</span>
+        </div>
+        <p>Obtiene una lista paginada de personajes con filtros opcionales.</p>
+        <h4>Parámetros</h4>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>page</code></td><td>number</td><td>No</td><td>Número de página (default: 1)</td></tr>
+            <tr><td><code>name</code></td><td>string</td><td>No</td><td>Filtrar por nombre del personaje</td></tr>
+            <tr><td><code>status</code></td><td>string</td><td>No</td><td>Filtrar por estado: alive, dead, unknown</td></tr>
+            <tr><td><code>species</code></td><td>string</td><td>No</td><td>Filtrar por especie</td></tr>
+            <tr><td><code>gender</code></td><td>string</td><td>No</td><td>Filtrar por género: female, male, genderless, unknown</td></tr>
+          </tbody>
+        </table>
+        <h4>Respuesta de Ejemplo</h4>
+        <pre>{
+  "info": {
+    "count": 826,
+    "pages": 42,
+    "next": "https://rickandmortyapi.com/api/character?page=2",
+    "prev": null
+  },
+  "results": [
+    {
+      "id": 1,
+      "name": "Rick Sanchez",
+      "status": "Alive",
+      "species": "Human",
+      "type": "",
+      "gender": "Male",
+      "origin": { "name": "Earth (C-137)", "url": "..." },
+      "location": { "name": "Citadel of Ricks", "url": "..." },
+      "image": "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+      "episode": ["https://rickandmortyapi.com/api/episode/1", "..."],
+      "url": "https://rickandmortyapi.com/api/character/1",
+      "created": "2017-11-04T18:48:46.250Z"
+    }
+  ]
+}</pre>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- ENDPOINT: GET /character/:id -->
+    <!-- ================================== -->
+    <section id="api-character-detail">
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-path">/character/:id</span>
+        </div>
+        <p>Obtiene información detallada de un personaje específico. También soporta múltiples IDs separados por coma.</p>
+        <h4>Parámetros</h4>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>number | number[]</td><td>Sí</td><td>ID del personaje o lista de IDs separados por coma</td></tr>
+          </tbody>
+        </table>
+        <h4>Respuesta de Ejemplo</h4>
+        <pre>{
+  "id": 1,
+  "name": "Rick Sanchez",
+  "status": "Alive",
+  "species": "Human",
+  "type": "",
+  "gender": "Male",
+  "origin": { "name": "Earth (C-137)", "url": "https://rickandmortyapi.com/api/location/1" },
+  "location": { "name": "Citadel of Ricks", "url": "https://rickandmortyapi.com/api/location/3" },
+  "image": "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+  "episode": [
+    "https://rickandmortyapi.com/api/episode/1",
+    "https://rickandmortyapi.com/api/episode/2"
+  ],
+  "url": "https://rickandmortyapi.com/api/character/1",
+  "created": "2017-11-04T18:48:46.250Z"
+}</pre>
+        <div class="notice">
+          <strong>Tip:</strong> Para obtener múltiples personajes (ej: favoritos), usar <code>/character/1,2,3</code>. Si es un solo ID devuelve un objeto; si son múltiples, devuelve un array.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- ENDPOINT: GET /episode -->
+    <!-- ================================== -->
+    <section id="api-episodes-list">
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-path">/episode</span>
+        </div>
+        <p>Obtiene una lista paginada de episodios de la serie.</p>
+        <h4>Parámetros</h4>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>page</code></td><td>number</td><td>No</td><td>Número de página (default: 1)</td></tr>
+            <tr><td><code>name</code></td><td>string</td><td>No</td><td>Filtrar por nombre del episodio</td></tr>
+            <tr><td><code>episode</code></td><td>string</td><td>No</td><td>Filtrar por código de episodio (ej: S01E01)</td></tr>
+          </tbody>
+        </table>
+        <h4>Respuesta de Ejemplo</h4>
+        <pre>{
+  "info": { "count": 51, "pages": 3, "next": "...?page=2", "prev": null },
+  "results": [
+    {
+      "id": 1,
+      "name": "Pilot",
+      "air_date": "December 2, 2013",
+      "episode": "S01E01",
+      "characters": ["https://rickandmortyapi.com/api/character/1", "..."],
+      "url": "https://rickandmortyapi.com/api/episode/1",
+      "created": "2017-11-10T12:56:33.798Z"
+    }
+  ]
+}</pre>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- ENDPOINT: GET /episode/:id -->
+    <!-- ================================== -->
+    <section id="api-episode-detail">
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-path">/episode/:id</span>
+        </div>
+        <p>Obtiene detalle de un episodio específico por su ID.</p>
+        <h4>Parámetros</h4>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>id</code></td><td>number</td><td>Sí</td><td>ID del episodio</td></tr>
+          </tbody>
+        </table>
+        <h4>Respuesta de Ejemplo</h4>
+        <pre>{
+  "id": 1,
+  "name": "Pilot",
+  "air_date": "December 2, 2013",
+  "episode": "S01E01",
+  "characters": ["https://rickandmortyapi.com/api/character/1", "..."],
+  "url": "https://rickandmortyapi.com/api/episode/1",
+  "created": "2017-11-10T12:56:33.798Z"
+}</pre>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- ENDPOINT: GET /episode/[ids] -->
+    <!-- ================================== -->
+    <section id="api-episodes-multiple">
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-path">/episode/1,2,3</span>
+        </div>
+        <p>Obtiene múltiples episodios en una sola petición. Se usa en la pantalla de detalle del personaje para cargar todos sus episodios.</p>
+        <h4>Parámetros</h4>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>ids</code></td><td>number[]</td><td>Sí</td><td>Lista de IDs separados por coma en la URL</td></tr>
+          </tbody>
+        </table>
+        <div class="notice">
+          <strong>Importante:</strong> Si se pasa un solo ID devuelve un objeto <code>Episode</code>. Si se pasan múltiples IDs devuelve un array <code>Episode[]</code>. El código de la app normaliza ambos casos con <code>Array.isArray()</code>.
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- ENDPOINT: GET /location -->
+    <!-- ================================== -->
+    <section id="api-locations-list">
+      <div class="endpoint-card">
+        <div class="endpoint-header">
+          <span class="method GET">GET</span>
+          <span class="endpoint-path">/location</span>
+        </div>
+        <p>Obtiene una lista paginada de ubicaciones del multiverso de Rick and Morty.</p>
+        <h4>Parámetros</h4>
+        <table>
+          <thead><tr><th>Parámetro</th><th>Tipo</th><th>Requerido</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>page</code></td><td>number</td><td>No</td><td>Número de página (default: 1)</td></tr>
+            <tr><td><code>name</code></td><td>string</td><td>No</td><td>Filtrar por nombre de la ubicación</td></tr>
+            <tr><td><code>type</code></td><td>string</td><td>No</td><td>Filtrar por tipo (Planet, Space station, etc.)</td></tr>
+            <tr><td><code>dimension</code></td><td>string</td><td>No</td><td>Filtrar por dimensión</td></tr>
+          </tbody>
+        </table>
+        <h4>Respuesta de Ejemplo</h4>
+        <pre>{
+  "info": { "count": 126, "pages": 7, "next": "...?page=2", "prev": null },
+  "results": [
+    {
+      "id": 1,
+      "name": "Earth (C-137)",
+      "type": "Planet",
+      "dimension": "Dimension C-137",
+      "residents": ["https://rickandmortyapi.com/api/character/38", "..."],
+      "url": "https://rickandmortyapi.com/api/location/1",
+      "created": "2017-11-10T12:42:04.162Z"
+    }
+  ]
+}</pre>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- TABLA DE MAPEO -->
+    <!-- ================================== -->
+    <section id="section-mapping">
+      <h2>📊 Tabla de Mapeo — Pantallas ↔ Endpoints</h2>
+      <table class="mapping-table">
+        <thead>
+          <tr>
+            <th>Pantalla</th>
+            <th>Ruta</th>
+            <th>Endpoint</th>
+            <th>Método</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🏠 Inicio</td>
+            <td><code>/</code></td>
+            <td><a href="#api-characters-list">/character</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Stats y personajes destacados</td>
+          </tr>
+          <tr>
+            <td>🏠 Inicio</td>
+            <td><code>/</code></td>
+            <td><a href="#api-episodes-list">/episode</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Conteo de episodios</td>
+          </tr>
+          <tr>
+            <td>🏠 Inicio</td>
+            <td><code>/</code></td>
+            <td><a href="#api-locations-list">/location</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Conteo de ubicaciones</td>
+          </tr>
+          <tr>
+            <td>👽 Personajes</td>
+            <td><code>/characters</code></td>
+            <td><a href="#api-characters-list">/character?filters</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Lista con filtros y paginación</td>
+          </tr>
+          <tr>
+            <td>📋 Detalle</td>
+            <td><code>/characters/:id</code></td>
+            <td><a href="#api-character-detail">/character/:id</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Info completa del personaje</td>
+          </tr>
+          <tr>
+            <td>📋 Detalle</td>
+            <td><code>/characters/:id</code></td>
+            <td><a href="#api-episodes-multiple">/episode/[ids]</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Episodios del personaje</td>
+          </tr>
+          <tr>
+            <td>📺 Episodios</td>
+            <td><code>/episodes</code></td>
+            <td><a href="#api-episodes-list">/episode?page=</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Lista paginada de episodios</td>
+          </tr>
+          <tr>
+            <td>🌍 Ubicaciones</td>
+            <td><code>/locations</code></td>
+            <td><a href="#api-locations-list">/location?page=</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Lista paginada de ubicaciones</td>
+          </tr>
+          <tr>
+            <td>⭐ Favoritos</td>
+            <td><code>/favorites</code></td>
+            <td><a href="#api-character-detail">/character/[ids]</a></td>
+            <td><span class="method GET">GET</span></td>
+            <td>Personajes favoritos por IDs</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </main>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+  function filterToc(el) {
+    const q = el.value.toLowerCase();
+    document.querySelectorAll('#toc .toc-section a').forEach(a => {
+      a.style.display = (q === '' || a.textContent.toLowerCase().includes(q)) ? 'block' : 'none';
+    });
+  }
+
+  // Highlight active TOC link on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        document.querySelectorAll('#toc a').forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`#toc a[href="#${entry.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+
+  // Copy buttons
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.endpoint-card pre, section > pre').forEach(pre => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'pre-wrapper';
+      pre.parentNode.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = 'Copiar';
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+          btn.textContent = '✓ Copiado';
+          setTimeout(() => btn.textContent = 'Copiar', 1800);
+        });
+      });
+      wrapper.appendChild(btn);
+    });
+  });
+</script>
+</body>
+</html>
